@@ -1,0 +1,71 @@
+# Hand Gesture Mouse Control 🖐️🖱️
+
+This project lets you control your computer mouse using just your "hand gestures"
+through your webcam. It uses "OpenCV", "MediaPipe", and "PyAutoGUI" 
+to track your hand in real-time and turn gestures into actions like moving the cursor, clicking, and scrolling.
+
+---
+
+## ✨ Features
+
+* Real-time "hand tracking" using your webcam.
+* Move your mouse by moving your "index finger".
+* **Pinch (thumb + index)** to click.
+* Optional "scroll mode" using a two-finger gesture.
+* Toggle between modes (Mirror / Gesture Overlay / Scroll / Click).
+* On-screen UI panel showing FPS, status, and active modes.
+
+---
+
+## 🛠️ Requirements
+
+Make sure you have Python 3.8+ and install the following dependencies:
+
+```bash
+pip install opencv-python mediapipe pyautogui numpy
+```
+
+---
+
+## 🚀 How to Run
+
+1. Connect a webcam.
+2. Open a terminal in the project folder.
+3. Run the script:
+
+```bash
+python smhand.py
+```
+A window will open showing your webcam feed with live tracking.
+---
+## 🎮 Controls
+
+While the script is running, you can press the following keys:
+
+* "ESC" → Exit
+* "M" → Toggle Mirror Mode
+* "G" → Toggle Gesture Overlay (landmarks)
+* "S" → Toggle Scroll Mode
+* "C" → Toggle Click Mode
+
+---
+
+## 🖐️ Gestures
+
+* "Move Cursor" → Move your index finger.
+* "Click" → Bring thumb and index finger close together (pinch).
+* "Scroll (when enabled)** → Hold a “peace ✌️” sign (index + middle up), then move your hand up (scroll up) or down (scroll down).
+
+---
+
+## ⚠️ Notes
+
+* Works best in good lighting.
+* Keep your hand in front of the webcam, slightly away for accuracy.
+* You may need to adjust sensitivity thresholds in the code for your system.
+
+---
+
+## 📸 Demo
+
+Imagine moving your mouse and clicking ""without touching your mouse at all"" — just your hand in the air!
