@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum QR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0d0d1a, #050510);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 3rem;
+      color: cyan;
+      text-shadow: 0 0 15px cyan;
+    }
+    h2 {
+      font-size: 1rem;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .card {
+      background: rgba(20, 20, 40, 0.9);
+      border-radius: 15px;
+      padding: 20px;
+      width: 320px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.2);
+    }
+    .card h3 {
+      color: cyan;
+      text-shadow: 0 0 10px cyan;
+      margin-bottom: 10px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    .tabs button.active {
+      background: linear-gradient(90deg, #00f2ff, #7d2bff);
+      box-shadow: 0 0 12px cyan;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: #111;
+      color: #fff;
+      box-shadow: inset 0 0 5px cyan;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: inherit;
+      background: linear-gradient(90deg, #00f2ff, #7d2bff);
+      color: #fff;
+      text-shadow: 0 0 5px black;
+      transition: all 0.3s;
+    }
+    .buttons button:hover {
+      filter: brightness(1.2);
+      box-shadow: 0 0 15px cyan;
+    }
+    .qr-output {
+      text-align: center;
+    }
+    #qrCanvas {
+      margin: 15px auto;
+      padding: 10px;
+      background: rgba(0,255,255,0.05);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    }
+    .download-btn {
+      display: inline-block;
+      padding: 10px 15px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #7d2bff, #00f2ff);
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .download-btn:hover {
+      box-shadow: 0 0 12px magenta;
+    }
+  </style>
+</head>
+<body>
+  <h1>QUANTUM QR</h1>
+  <h2>Encode. <span style="color:cyan">Scan.</span> <span style="color:violet">Transcend.</span></h2>
+
+  <div class="container">
+    <!-- Input Panel -->
+    <div class="card">
+      <h3>⚡ Quantum Input</h3>
+      <p>Select your data source to generate a quantum QR matrix</p>
+      <div class="tabs">
+        <button id="textTab" class="active">Text</button>
+        <button id="urlTab">URL</button>
+      </div>
+      <input id="inputField" placeholder="Enter text or URL here...">
+
+      <select id="qrStyle">
+        <option value="default">Default Matrix</option>
+        <option value="dots">Dot Matrix</option>
+        <option value="waves">Wave Pattern</option>
+      </select>
+
+      <div class="buttons">
+        <button onclick="generateQR()">⚙ Generate QR</button>
+        <button onclick="clearQR()">✖ Clear</button>
+      </div>
+    </div>
+
+    <!-- QR Output -->
+    <div class="card qr-output">
+      <h3>🧩 Quantum Matrix</h3>
+      <p>Your generated quantum QR code matrix</p>
+      <canvas id="qrCanvas"></canvas>
+      <a id="downloadBtn" class="download-btn" href="#" download="quantum-qr.png">⬇ Download Quantum Matrix</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+  <script>
+    let activeMode = 'text';
+
+    // Tab switching
+    document.getElementById('textTab').addEventListener('click', () => {
+      activeMode = 'text';
+      document.getElementById('textTab').classList.add('active');
+      document.getElementById('urlTab').classList.remove('active');
+      document.getElementById('inputField').placeholder = "Enter text here...";
+    });
+    document.getElementById('urlTab').addEventListener('click', () => {
+      activeMode = 'url';
+      document.getElementById('urlTab').classList.add('active');
+      document.getElementById('textTab').classList.remove('active');
+      document.getElementById('inputField').placeholder = "Enter URL here...";
+    });
+
+    let qr = new QRious({
+      element: document.getElementById('qrCanvas'),
+      size: 250,
+      background: 'transparent',
+      foreground: '#00f2ff'
+    });
+
+    function generateQR() {
+      let value = document.getElementById('inputField').value.trim();
+      if (!value) {
+        alert("Please enter something first!");
+        return;
+      }
+
+      // If URL tab active, validate URL
+      if (activeMode === 'url' && !/^https?:\/\//.test(value)) {
+        alert("Enter a valid URL starting with http:// or https://");
+        return;
+      }
+
+      qr.value = value;
+
+      // Apply style effect
+      let style = document.getElementById('qrStyle').value;
+      let ctx = qr.canvas.getContext('2d');
+      let imgData = ctx.getImageData(0, 0, qr.size, qr.size);
+      ctx.clearRect(0, 0, qr.size, qr.size);
+
+      if (style === 'dots') {
+        for (let y = 0; y < qr.size; y += 6) {
+          for (let x = 0; x < qr.size; x += 6) {
+            let alpha = imgData.data[((y * qr.size + x) * 4) + 3];
+            if (alpha > 128) {
+              ctx.beginPath();
+              ctx.arc(x, y, 2, 0, Math.PI * 2);
+              ctx.fillStyle = '#00f2ff';
+              ctx.fill();
+            }
+          }
+        }
+      } else if (style === 'waves') {
+        for (let y = 0; y < qr.size; y += 4) {
+          for (let x = 0; x < qr.size; x += 4) {
+            let alpha = imgData.data[((y * qr.size + x) * 4) + 3];
+            if (alpha > 128) {
+              ctx.fillStyle = '#7d2bff';
+              ctx.fillRect(x, y, 3, 1);
+            }
+          }
+        }
+      } else {
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      // Set download link
+      document.getElementById('downloadBtn').href = qr.toDataURL('image/png');
+    }
+
+    function clearQR() {
+      document.getElementById('inputField').value = "";
+      let ctx = qr.canvas.getContext('2d');
+      ctx.clearRect(0, 0, qr.size, qr.size);
+      document.getElementById('downloadBtn').href = "#";
+    }
+  </script>
+</body>
+</html>
